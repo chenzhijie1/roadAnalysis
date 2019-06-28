@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>路网分析</title>
+    <link rel="stylesheet" type="text/css" href="http://localhost/arcgis_js_api/library/3.28/esri/css/esri.css" />
+    <script src="http://localhost/arcgis_js_api/library/3.28/init.js"></script>
+    <script src="../js/jquery-1.9.0.js"></script>
+    <style>
+        html, body, #map {
+            width:   100%;
+            height:  100%;
+            margin:  0;
+            padding: 0;
+        }
+    </style>
+    <script>
+        var map;var tb;
+        require([
+            "dojo/dom-construct",
+            "esri/Color",
+            "esri/dijit/Geocoder",
+            "esri/dijit/Popup",
+            "esri/InfoTemplate",
+            "esri/layers/ArcGISTiledMapServiceLayer",
+            "esri/map",
+            "esri/symbols/SimpleFillSymbol",
+            "esri/symbols/SimpleLineSymbol", "esri/config",
+            "esri/layers/agstiled","esri/toolbars/draw",
+            "esri/tasks/query","esri/symbols/SimpleMarkerSymbol","esri/graphic","esri/geometry/Extent","esri/tasks/QueryTask",
+            "esri/tasks/RouteTask","esri/tasks/RouteParameters","esri/tasks/FeatureSet",
+            "dojo/domReady!"
+        ], function(
+            domConstruct, Color, Geocoder, Popup, InfoTemplate,
+            ArcGISTiledMapServiceLayer, Map,SimpleFillSymbol,SimpleLineSymbol,Config,
+            Agstiled,Draw,Query,SimpleMarkerSymbol,Graphic,Extent,QueryTask,RouteTask,RouteParameters,FeatureSet
+        ) {
+            var map, defaultSymbol, highlightSymbol, resultTemplate,tb;
+            var stopSymbol;
+
+            map = new Map("map", {
+                extent: new Extent({
+                    "xmin":126.08797131337525,"ymin":41.88483304829672,"xmax":130.05572254059723,"ymax":47.20292839632739,
+                    "spatialReference":{"wkid":4326}})
+            });
+            var oilAndGasLayer = new ArcGISTiledMapServiceLayer("http://localhost:6080/arcgis/rest/services/map/MapServer");
+            map.addLayer(oilAndGasLayer);
+
+
+            stopSymbol = new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_CROSS).setSize(15);
+            stopSymbol.outline.setWidth(4);
+            routeSymbol = new SimpleLineSymbol().setColor(new Color([0,0,255,0.5])).setWidth(5);
+            debugger;
+            var  routeTask = new RouteTask("http://localhost:6080/arcgis/rest/services/roadNet/NAServer/Route");
+            routeParams = new RouteParameters();
+            routeParams.stops = new FeatureSet();
+            routeTask.on("solve-complete",function(routeResults, barriers){
+                map.graphics.add(routeResults.result.routeResults[0].route.setSymbol(routeSymbol));
+
+            });
+            routeTask.on("error",function (err) {
+                alert("An error occured\n" + err.message + "\n" + err.details.join("\n"));
+                routeParams.stops.features.splice(0, 0, lastStop);
+                map.graphics.remove(routeParams.stops.features.splice(1, 1)[0]);
+            })
+
+            map.on("click",function(evt){
+                debugger;
+                var stop = map.graphics.add(new Graphic(evt.mapPoint, stopSymbol));
+                routeParams.stops.features.push(stop);
+                if (routeParams.stops.features.length >= 2) {
+                    routeTask.solve(routeParams);
+                    lastStop = routeParams.stops.features.splice(0, 1)[0];
+                }
+            });
+            function addStop(evt) {
+                var stop = map.graphics.add(new esri.Graphic(evt.mapPoint, stopSymbol));
+                routeParams.stops.features.push(stop);
+                if (routeParams.stops.features.length >= 2) {
+                    routeTask.solve(routeParams);
+                    lastStop = routeParams.stops.features.splice(0, 1)[0];
+                }
+            }
+        });
+
+    </script>
+</head>
+<body>
+<div id="map" style="width:1000px; height:800px; border:1px solid #000;"></div>
+<p>点击两个点以上可生成路径</p>
+</body>
+</html>

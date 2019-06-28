@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+
+	<title>道路查询</title>
+
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+
+	<link rel="stylesheet" href="http://58.56.168.30:8013/arcgisjsapi/arcgis_js_api/library/3.19/3.19/esri/css/esri.css">
+
+	<style>
+
+	html,
+
+	body,
+
+	#map {
+
+		height: 100%;
+
+		margin: 0;
+
+		padding: 0;
+
+	}
+
+</style>
+
+<script src="js/jquery-1.9.1.js"></script>
+
+<script src="js/bootstrap-treeview.js"></script>
+
+<script src="js/checkall.js"></script>
+
+<script src="http://58.56.168.30:8013/arcgisjsapi/arcgis_js_api/library/3.19/3.19/init.js"></script>
+
+</head>
+
+<body style="overflow-x: hidden; overflow-y: hidden; width: 100%; height: 100%">
+
+	<button id="start" style="height: 40px;">寻找道路</button>
+
+	<button id="complete" style="height: 40px;">确定路线</button>
+
+	<div class="layerSelection" style="width: 300px;height:800px;overflow-y: scroll;position: absolute;z-index: 100;right: 0;top: 0;">
+
+		<div id="tree" ></div>
+
+	</div>
+
+	<div id="map"></div>
+
+	<script>
+
+		var map, tb;
+
+		var GJurl = "http://58.56.168.30:6080/arcgis/rest/services/齐鲁交通/专题服务全/MapServer";
+
+		require([
+
+			"esri/map",
+
+			"esri/toolbars/draw",
+
+			"esri/geometry/Polygon",
+
+			"esri/geometry/Circle",
+
+			"esri/SpatialReference",
+
+			"esri/layers/FeatureLayer",
+
+			"esri/tasks/query",
+
+			"esri/symbols/SimpleLineSymbol",
+
+			"esri/symbols/SimpleMarkerSymbol",
+
+			"tdlib/SDTDTLayer",
+
+			"esri/layers/ArcGISDynamicMapServiceLayer",
+
+			"esri/graphic",
+
+			"esri/Color",
+
+			"dojo/dom",
+
+			"dojo/on",
+
+			"dojo/domReady!"
+
+			], function(Map, Draw,Polygon,Circle,SpatialReference,FeatureLayer, Query, SimpleLineSymbol,SimpleMarkerSymbol,SDTDTLayer, ArcGISDynamicMapServiceLayer, Graphic, Color, on, dom) {
+
+				map = new Map("map", {
+
+					wkid: 4326,
+
+					center: [118.1, 36.1],
+
+					zoom: 10,
+
+					isDoubleClickZoom: false,
+
+					logo: false,
+
+				});			
+
+				var sdvecLayer = new SDTDTLayer();
+
+				map.addLayer(sdvecLayer);
+
+				var layer = new ArcGISDynamicMapServiceLayer(GJurl);
+
+				map.addLayer(layer);
+
+				map.disableDoubleClickZoom();
+
+				var pointArr=new Array();
+
+				var layerArr=new Array();
+
+				function addGraphic(evt) {
+
+					var symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([0,191,255]), 6);
+
+					var graphic = new esri.Graphic(evt.geometry,symbol);
+
+					map.graphics.add(graphic); 
+
+				}
+
+				document.getElementById("start").onclick=function(){
+
+					tb = new Draw(map);
+
+					tb.activate(Draw.POLYLINE);
+
+					tb.on("draw-end", addGraphic);
+
+					clickEvent= map.on("click", clickEvent);
+
+				}
+
+				function clickEvent(e){
+
+					var longitude=e.mapPoint.x;
+
+					var dimension=e.mapPoint.y;
+
+					var coordinate=new Array();
+
+					coordinate.push(longitude);
+
+					coordinate.push(dimension);
+
+					pointArr.push(coordinate);
+
+					console.log(pointArr)
+
+				}
+
+				document.getElementById("complete").onclick=function(){
+
+					tb.deactivate();
+
+					// map.graphics.clear();
+
+					clickEvent.remove();
+
+					var polylineArr=new Array();
+
+					for(var a=1;a<pointArr.length-1;a++){
+
+						var circleGeometry = new Circle({
+
+							center: pointArr[a],
+
+							radius: 3000,
+
+							geodesic: true
+
+						});
+
+						var circleSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOT, new dojo.Color([0,0,0]), 2);
+
+						var graphic = new esri.Graphic(circleGeometry,circleSymbol);
+
+						map.graphics.add(graphic); 
+
+					}					
+
+					for (var i = 0; i < pointArr.length-1; i++) {
+
+						var polylineArr=[];
+
+						polylineArr.push(pointArr[i]);
+
+						polylineArr.push(pointArr[i+1]);
+
+						var edge1=Math.abs(polylineArr[1][1]-polylineArr[0][1]);
+
+						var edge2=Math.abs(polylineArr[1][0]-polylineArr[0][0]);
+
+					var arcTangent=Math.atan(edge1/edge2);//反正切
+
+					var extentx=Math.sin(arcTangent)*0.5;
+
+					var extenty=Math.cos(arcTangent)*0.5;
+
+					if (polylineArr[1][1]-polylineArr[0][1]<0) {
+
+						var pointe1=[polylineArr[1][0]+extentx,polylineArr[1][1]+extenty];
+
+						var pointe2=[polylineArr[1][0]-extentx,polylineArr[1][1]-extenty];
+
+						var pointe3=[polylineArr[0][0]+extentx,polylineArr[0][1]+extenty];
+
+						var pointe4=[polylineArr[0][0]-extentx,polylineArr[0][1]-extenty];
+
+						var geometryPolygon = new Polygon([ pointe1, pointe2, pointe4, pointe3]);
+
+					} else {
+
+						var pointe1=[polylineArr[1][0]-extentx,polylineArr[1][1]+extenty];
+
+						var pointe2=[polylineArr[1][0]+extentx,polylineArr[1][1]-extenty];
+
+						var pointe3=[polylineArr[0][0]-extentx,polylineArr[0][1]+extenty];
+
+						var pointe4=[polylineArr[0][0]+extentx,polylineArr[0][1]-extenty];
+
+						var geometryPolygon = new Polygon([pointe1, pointe2, pointe4, pointe3]);
+
+					}
+
+					var polygonSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOT, new dojo.Color([0,0,0]), 2);
+
+					var graphic = new esri.Graphic(geometryPolygon,polygonSymbol);
+
+					map.graphics.add(graphic); 
+
+					var nodeArr = new Array();
+
+					var nodeId = $('#tree').treeview('getChecked', nodeId);
+
+					for(var i = 1; i < nodeId.length; i++) {
+
+						nodeArr.push(nodeId[i].nodeId - 1)
+
+					}
+
+					for(var i = 0; i < layer.layerInfos.length; i++) {
+
+						if(nodeArr.length == layer.layerInfos.length){
+
+							var layerId = layer.layerInfos[i].id;
+
+                		if (layerId==19||layerId==20||layerId==21) {return;} //不查询路线               		
+
+                		featureLayer = new FeatureLayer(GJurl + "/" + layerId);
+
+                		var query = new Query();
+
+                		query.geometry = geometryPolygon;
+
+                		query.where = "1=1";
+
+                		query.outFields = ["*"];
+
+                		featureLayer.queryFeatures(query, function(res){
+
+                			console.log(res)
+
+                		});
+
+                	}
+
+                	else{
+
+                		if(nodeArr.indexOf(layer.layerInfos[i].id) > -1) {
+
+                			var layerId = layer.layerInfos[i].id;
+
+                			if (layerId==19||layerId==20||layerId==21) {return;}   //不查询路线
+
+                			featureLayer = new FeatureLayer(GJurl + "/" + layerId);
+
+                			var query = new Query();
+
+                			query.geometry = geometryPolygon;
+
+                			query.where = "1=1";
+
+                			query.outFields = ["*"];
+
+                			featureLayer.queryFeatures(query, function(res){
+
+                				console.log(res)
+
+                			});
+
+                		}
+
+                	}
+
+                }		               
+
+ }	
+
+ pointArr=[];
+
+}  
+
+$.ajax({
+
+	url: 'http://58.56.168.30:6080/arcgis/rest/services/%E9%BD%90%E9%B2%81%E4%BA%A4%E9%80%9A/%E4%B8%93%E9%A2%98%E6%9C%8D%E5%8A%A1%E5%85%A8/MapServer?f=pjson',
+
+	type: 'GET',
+
+	dataType: 'json',
+
+	success:function(res){
+
+		var data = [
+
+		{
+
+			text: "选择查询图层",
+
+			nodes: [
+
+			]
+
+		}
+
+		];
+
+		for (var i = 0; i < res.layers.length; i++) {						
+
+			data[0].nodes[i]=new Object();
+
+			data[0].nodes[i].text=res.layers[i].name;
+
+		};
+
+		$('#tree').treeview({
+
+			data: data,
+
+			levels: 5,
+
+			showCheckbox: true,
+
+			backColor: '#FFFFFF',
+
+			color: '#428BCA',
+
+			onNodeChecked: nodeChecked,
+
+			onNodeUnchecked: nodeUnchecked
+
+		});
+
+	}
+
+});      	
+
+});
+
+</script>
+
+</body>
+
+ 
+
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>最优路径分析</title>
+<link rel="stylesheet" href="http://localhost/arcgis_js_api/library/3.28/esri/css/esri.css">
+<link rel="stylesheet" href="../css/index.css">
+<script src="http://localhost/arcgis_js_api/library/3.28/bdlib/3.18.js"></script>
+
+<script type="text/javascript">
+  var map, routeTask, routeParams, routes = [];
+  var stopSymbol, barrierSymbol, routeSymbol,pointStop ,textSymbol;
+  var mapOnClick_addStops_connect = null, mapOnClick_addBarriers_connect = null;
+   require([ 
+       "esri/map", "esri/geometry/Extent", "esri/SpatialReference", "esri/layers/ArcGISDynamicMapServiceLayer","esri/symbols/PictureMarkerSymbol",
+       "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/Color",
+       "esri/tasks/RouteTask", "esri/tasks/RouteParameters", "esri/tasks/FeatureSet", "dojo/domReady!"
+       ],function(Map, Extent, SpatialReference, ArcGISDynamicMapServiceLayer,PictureMarkerSymbol, SimpleMarkerSymbol, SimpleLineSymbol, Color,
+        RouteTask, RouteParameters, FeatureSet){
+		var extent = new Extent(-122.68843648274995, 37.74065995740004, -122.12085938474996, 37.97199062310004, new SpatialReference({ wkid: 4326 }))
+        map = new esri.Map("map", {
+            extent: extent
+        });
+
+        var streetMap = new ArcGISDynamicMapServiceLayer("http://localhost:6080/arcgis/rest/services/map/MapServer");
+        map.addLayer(streetMap);
+
+        routeTask = new RouteTask("http://localhost:6080/arcgis/rest/services/map/NAServer/RouterLayer");
+        routeParams = new RouteParameters();
+        routeParams.stops = new FeatureSet();
+        routeParams.barriers = new FeatureSet();
+	    routeParams.returnStops = true;//返回站点  
+        routeParams.returnRoutes = true;  //返回路障
+        routeParams.returnDirections = true;//返回路径导航
+        routeParams.startTimeIsUTC = true;
+        routeParams.findBestSequence = true;
+        routeParams.useTimeWindows = true;
+        routeParams.directionsLanguage = "zh-CN";//设置返回结果为中文
+
+       
+        //定义停靠点的符号
+        // stopSymbol = new SimpleMarkerSymbol();
+        // stopSymbol.style = SimpleMarkerSymbol.STYLE_CIRCLE;stopSymbol.setSize(14);stopSymbol.setColor(new Color("#FFFF00"));
+        // stopSymbol.outline.setWidth(3);
+		stopSymbol = new PictureMarkerSymbol("../img/location.png", 30, 30);
+		
+        //定义障碍点的符号
+        // barrierSymbol = new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_X).setSize(10);
+        // barrierSymbol.outline.setWidth(3).setColor(new Color([255, 0, 0]));
+		barrierSymbol = new PictureMarkerSymbol("../img/luzhang_2.png", 30, 30);
+		//定义路径符号
+        routeSymbol = new SimpleLineSymbol().setColor(new Color([0, 0, 255, 0.5])).setWidth(5);	
+   });
+
+  
+
+   
+    //开始站点事件
+	function addStops() {
+		removeEventHandlers();
+		mapOnClick_addStops_connect = map.on("click", addStop);
+	}
+
+	//添加标记点击事件
+	function addSymbolclicks() {
+	console.log(1);
+	}
+	
+	//清空站点
+	function clearStops() {
+		removeEventHandlers();
+		for (var i = routeParams.stops.features.length - 1; i >= 0; i--) {
+			map.graphics.remove(routeParams.stops.features.splice(i, 1)[0]);
+		}
+	}
+	
+	//增加站点
+	function addStop(evt) {
+		require(["esri/graphic","esri/InfoTemplate"], function (Graphic,InfoTemplate) {
+			var graphic = new Graphic(evt.mapPoint, stopSymbol);
+			for(var i=0;i<routeParams.stops.features.length;i++){
+				
+			}
+			
+            var infoTemplate = new InfoTemplate();
+			    infoTemplate.setTitle("站点"+i);
+				infoTemplate.setContent('<div><img src="../img/location.png">第'+i+"个标记"+'</div>');
+				graphic.setInfoTemplate(infoTemplate);
+			routeParams.stops.features.push(
+			map.graphics.add(graphic)				  
+			);
+		});	
+
+	}
+
+	//文本符号：文本信息，点坐标，符号
+	function addSymbol() {
+		console.log(1);
+	}
+
+ 
+	
+	
+	//开始增加路障事件
+	function addBarriers() {
+		removeEventHandlers();
+		mapOnClick_addBarriers_connect = map.on("click", addBarrier);
+	}
+	
+	//清空路障
+	function clearBarriers() {
+		removeEventHandlers();
+		for (var i = routeParams.barriers.features.length - 1; i >= 0; i--) {
+			map.graphics.remove(routeParams.barriers.features.splice(i, 1)[0]);
+		}
+	}
+	
+	//增加路障
+	function addBarrier(evt) {
+		require(["esri/graphic","esri/InfoTemplate"], function (Graphic,InfoTemplate) {
+			var graphic1 = new Graphic(evt.mapPoint, barrierSymbol);
+			for(var i=0;i<routeParams.barriers.features.length;i++){
+				
+			}			
+            var infoTemplate = new InfoTemplate();
+			    infoTemplate.setTitle("路障"+i);
+				infoTemplate.setContent('<div><img src="../img/luzhang.png">第'+i+"个路障"+'</div>');
+				graphic1.setInfoTemplate(infoTemplate);
+
+			routeParams.barriers.features.push(
+				  map.graphics.add(graphic1)
+				);
+		});
+	}
+	
+	//清除事件
+	function removeEventHandlers() {
+		if (mapOnClick_addStops_connect != null) {
+			mapOnClick_addStops_connect.remove();
+		}
+		if (mapOnClick_addBarriers_connect != null) {
+			mapOnClick_addBarriers_connect.remove();
+		}
+	}
+	
+	//路径分析
+	function solveRoute() {
+		dojo.byId("direction").innerHTML="";
+		removeEventHandlers();
+		routeTask.solve(routeParams, showRoute, errorHandler);
+	}
+	
+	//清空路径
+	function clearRoutes() {
+		for (var i = routes.length - 1; i >= 0; i--) {
+			map.graphics.remove(routes.splice(i, 1)[0]);
+		}
+		routes = [];
+		dojo.byId("direction").innerHTML="";
+	}
+	
+	//绘制最优路径至地图
+	function showRoute(result) {
+		clearRoutes();			   
+		var routeResults = result.routeResults;
+		routes.push(
+			map.graphics.add(routeResults[0].route.setSymbol(routeSymbol))
+			);	   
+		var directions = routeResults[0].directions; 
+		require(["dojo/_base/array"],function(array){
+			 var dhtml="";
+			 array.map(directions.features, function (feature) { 
+			        dhtml+=feature.attributes.text+"<br>";
+                    //return feature.attributes.text;  
+             }); 
+			
+			 dojo.byId("direction").innerHTML=dhtml; 			
+		});   
+		
+		var msgs = ["服务器消息："];
+		for (var i = 0; i < result.messages.length; i++) {
+			msgs.push(result.messages[i].type + " : " + result.messages[i].description);
+		}
+		if (msgs.length > 1) {
+			alert(msgs.join("\n - "));
+		}
+	}
+	
+	//路径分析异常
+	function errorHandler(err) {
+		alert("发生错误\n" + err.message + "\n" + err.details.join("\n"));
+	}
+
+
+</script>
+</head>
+
+<body class="claro">
+    <button class="button-bevel orange" onclick="addStops()"> <span class="refresh"></span> 增加站点 </button>
+    <button class="button-bevel orange" onclick="clearStops()"> <span class="shuffle"></span> 清除站点 </button>
+    <button class="button-bevel orange" onclick="addBarriers()"> <span class="preview"></span> 增加路障 </button> 
+    <button class="button-bevel orange" onclick="clearBarriers()"> <span class="tea"></span> 清除路障 </button> 
+    <button class="button-bevel orange" onclick="solveRoute()"> <span class="wifi"></span> 路径分析 </button> 
+	<button class="button-bevel orange" onclick="clearRoutes()"> <span class="locator"></span> 清除路径 </button> 
+	<button class="button-bevel orange" onclick="addSymbolclicks()"> <span class="biaoji"></span> 添加标记 </button> 
+    <div id="map">
+         <div id="direction" class="DH_info"></div>
+    </div>  
+</body>
+</html>

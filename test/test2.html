@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript">
+           function GetToken() {
+      
+            $.ajax({
+                url: "http://192.168.80.73:6080/arcgis/rest/services/map/MapServer?f=pjson",
+                type: "get",
+                async:true,
+                contentType: "application/x-www-form-urlencoded",
+                success: function (result) {
+                    alert(result);
+                    var html='';
+                    $(".datagrid").empty();
+                    html+="id" + result.mapName + "天气" + result.name + "图层号"+ result.parentLayerId;
+                    $(".datagrid").append(html);
+                    var resultData = JSON.parse(result);
+                   
+                },
+                error: function (xhr, status, err) {
+                    alert(xhr.responseText);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <input type="button" value="请求数据" style="width: 70px" onclick="GetToken();">
+    <span class="datagrid"> </span>
+</body>
+</html>
