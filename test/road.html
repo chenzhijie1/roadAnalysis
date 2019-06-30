@@ -22,10 +22,10 @@
             extent: extent
         });
 
-        var streetMap = new ArcGISDynamicMapServiceLayer("http://localhost:6080/arcgis/rest/services/map/MapServer");
+        var streetMap = new ArcGISDynamicMapServiceLayer("http://localhost:6080/arcgis/rest/services/routerAnalysis/MapServer");
         map.addLayer(streetMap);
 
-        routeTask = new RouteTask("http://localhost:6080/arcgis/rest/services/map/NAServer/RouterLayer");
+        routeTask = new RouteTask("http://localhost:6080/arcgis/rest/services/routerAnalysis/NAServer/Router");
         routeParams = new RouteParameters();
         routeParams.stops = new FeatureSet();
         routeParams.barriers = new FeatureSet();
@@ -78,14 +78,12 @@
 	function addStop(evt) {
 		require(["esri/graphic","esri/InfoTemplate"], function (Graphic,InfoTemplate) {
 			var graphic = new Graphic(evt.mapPoint, stopSymbol);
-			for(var i=0;i<routeParams.stops.features.length;i++){
-				
-			}
-			
-            var infoTemplate = new InfoTemplate();
-			    infoTemplate.setTitle("站点"+i);
-				infoTemplate.setContent('<div><img src="../img/location.png">第'+i+"个标记"+'</div>');
-				graphic.setInfoTemplate(infoTemplate);
+			for(var i = 0; i <= routeParams.stops.features.length; i ++){
+				var infoTemplate = new InfoTemplate();
+			    infoTemplate.setTitle("站点"+(i+1));
+				infoTemplate.setContent('<div><img src="../img/location.png">第'+(i+1)+"个标记"+'</div>');
+				graphic.setInfoTemplate(infoTemplate);			
+			}     
 			routeParams.stops.features.push(
 			map.graphics.add(graphic)				  
 			);
@@ -119,13 +117,13 @@
 	function addBarrier(evt) {
 		require(["esri/graphic","esri/InfoTemplate"], function (Graphic,InfoTemplate) {
 			var graphic1 = new Graphic(evt.mapPoint, barrierSymbol);
-			for(var i=0;i<routeParams.barriers.features.length;i++){
-				
-			}			
-            var infoTemplate = new InfoTemplate();
-			    infoTemplate.setTitle("路障"+i);
-				infoTemplate.setContent('<div><img src="../img/luzhang.png">第'+i+"个路障"+'</div>');
+			for(var i = 0;i <= routeParams.barriers.features.length; i ++){
+				var infoTemplate = new InfoTemplate();
+			    infoTemplate.setTitle("路障"+(i+1));
+				infoTemplate.setContent('<div><img src="../img/luzhang.png">第'+(i+1)+"个路障"+'</div>');
 				graphic1.setInfoTemplate(infoTemplate);
+			}			
+            
 
 			routeParams.barriers.features.push(
 				  map.graphics.add(graphic1)
