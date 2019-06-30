@@ -15,19 +15,11 @@
     <script type="text/javascript">
 
            function GetToken() {
-
-      
-
             $.ajax({
-
                 url: "http://localhost:6080/arcgis/rest/services/routerAnalysis/MapServer/2?f=pjson",
-
                 type: "get",
-
                 async:true,
-
                 contentType: "application/x-www-form-urlencoded",
-
                 success: function (result) {
                 var data = JSON.parse(result);
                 var html="";
@@ -35,7 +27,6 @@
                     html+="id:" + data.id + "name" + data.name + "type"+ data.type;
                     $(".datagrid").append(html);
                 },
-
                 error: function (xhr, status, err) {
                     alert(xhr.responseText);
                 }
