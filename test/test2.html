@@ -1,13 +1,20 @@
 <!DOCTYPE html>
+
 <html>
+
 <head>
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
     <title></title>
+
     <meta charset="utf-8" />
+
     <script src="../js/jquery-1.11.3.min.js"></script>
+
     <script type="text/javascript">
+
            function GetToken() {
-      
             $.ajax({
                 url: "http://localhost:6080/arcgis/rest/services/map/MapServer?f=pjson",
                 type: "get",
@@ -52,10 +59,15 @@
         }
         
     </script>
+
 </head>
+
 <body>
+
     <input type="button" value="请求数据" style="width: 70px" onclick="GetToken();">
     <input type="button" value="请求数据" style="width: 70px" onclick="getdata();">
     <span class="datagrid"> </span>
+
 </body>
+
 </html>
