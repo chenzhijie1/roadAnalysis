@@ -186,6 +186,8 @@
 					dhtml+="<img src='../img/youhouzhuan.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTTurnLeft" || feature.attributes.maneuverType=="esriDMTBearLeft"){
 					dhtml+="<img src='../img/zuozhuan1.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
+				 }else if(feature.attributes.maneuverType=="esriDMTBearRight"){
+					dhtml+="<img src='../img/xiangyouzhix.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else {
 					dhtml+="<img src='../img/likai.png'>"+feature.attributes.text+"<br>";
 				 }
