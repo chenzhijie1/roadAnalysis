@@ -13,11 +13,30 @@
   var stopSymbol, barrierSymbol, routeSymbol,pointStop ;
   var mapOnClick_addStops_connect = null, mapOnClick_addBarriers_connect = null;
    require([ 
-       "esri/map", "esri/geometry/Extent", "esri/SpatialReference", "esri/layers/ArcGISDynamicMapServiceLayer","esri/symbols/PictureMarkerSymbol",
-       "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/Color",
-       "esri/tasks/RouteTask", "esri/tasks/RouteParameters", "esri/tasks/FeatureSet", "dojo/domReady!"
-       ],function(Map,Extent, SpatialReference, ArcGISDynamicMapServiceLayer,PictureMarkerSymbol, SimpleMarkerSymbol, SimpleLineSymbol, Color,
-        RouteTask, RouteParameters, FeatureSet){
+       "esri/map", 
+	   "esri/geometry/Extent", 
+	   "esri/SpatialReference", 
+	   "esri/layers/ArcGISDynamicMapServiceLayer",
+	   "esri/symbols/PictureMarkerSymbol",
+       "esri/symbols/SimpleMarkerSymbol", 
+	   "esri/symbols/SimpleLineSymbol",
+	   "esri/Color",
+       "esri/tasks/RouteTask", 
+	   "esri/tasks/RouteParameters", 
+	   "esri/tasks/FeatureSet", 
+	   "dojo/domReady!"
+       ],function(
+		Map,Extent, 
+		SpatialReference, 
+	    ArcGISDynamicMapServiceLayer,
+		PictureMarkerSymbol, 
+		SimpleMarkerSymbol, 
+		SimpleLineSymbol, 
+		Color,
+        RouteTask, 
+		RouteParameters, 
+		FeatureSet
+		){
 		var extent = new Extent(-122.68843648274995, 37.74065995740004, -122.12085938474996, 37.97199062310004, new SpatialReference({ wkid: 4326 }))
         map = new esri.Map("map", {
             extent: extent
@@ -33,21 +52,16 @@
 	    routeParams.returnStops = true;//返回站点  
         routeParams.returnRoutes = true;  //返回路障
         routeParams.returnDirections = true;//返回路径导航
-        routeParams.startTimeIsUTC = true;
-        routeParams.findBestSequence = true;
-        routeParams.useTimeWindows = true;
+        routeParams.startTimeIsUTC = true; //开始时间设置UTC格式
+        routeParams.findBestSequence = true; //返回最佳路径
+        routeParams.useTimeWindows = true; //启用时间窗口
         routeParams.directionsLanguage = "zh-CN";//设置返回结果为中文
 
        
         //定义停靠点的符号
-        // stopSymbol = new SimpleMarkerSymbol();
-        // stopSymbol.style = SimpleMarkerSymbol.STYLE_CIRCLE;stopSymbol.setSize(14);stopSymbol.setColor(new Color("#FFFF00"));
-        // stopSymbol.outline.setWidth(3);
 		stopSymbol = new PictureMarkerSymbol("../img/location.png", 30, 30);
 		
         //定义障碍点的符号
-        // barrierSymbol = new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_X).setSize(10);
-        // barrierSymbol.outline.setWidth(3).setColor(new Color([255, 0, 0]));
 		barrierSymbol = new PictureMarkerSymbol("../img/luzhang_2.png", 30, 30);
 		//定义路径符号
         routeSymbol = new SimpleLineSymbol().setColor(new Color([0, 0, 255, 0.5])).setWidth(5);	
