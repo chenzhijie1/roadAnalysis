@@ -3,6 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>最优路径分析</title>
+<link rel="shortcut icon" type="image/ico" href="/favicon.ico" />
 <link rel="stylesheet" href="http://localhost/arcgis_js_api/library/3.28/esri/css/esri.css">
 <link rel="stylesheet" href="../css/index.css">
 <script src="http://localhost/arcgis_js_api/library/3.28/bdlib/3.18.js"></script>
@@ -160,38 +161,43 @@
 		require(["dojo/_base/array"],function(array){
 			 var dhtml="";
 			 array.map(directions.features, function (feature) {
-				 console.log(feature.attributes.maneuverType); 
+				 var time; 
+				 var useTime;
+				 var distance =parseInt(feature.attributes.length) +"米";
+	             time = feature.attributes.time;
+                 useTime = time.toFixed(2)+"分";
 				 if(feature.attributes.maneuverType =="esriDMTStop"){                  
 			        dhtml+="<img src='../img/location3.png'>"+feature.attributes.text+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTStraight"){
-					dhtml+="<img src='../img/zhixing1.png'>"+feature.attributes.text+"<br>";
+					dhtml+="<img src='../img/zhixing1.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTUTurn"){
-					dhtml+="<img src='../img/diaotou.png'>"+feature.attributes.text+"<br>";
+					dhtml+="<img src='../img/diaotou.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTRampRight"){
-					dhtml+="<img src='../img/zhixing.png'>"+feature.attributes.text+"<br>";
+					dhtml+="<img src='../img/zhixing.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTTurnRight" || feature.attributes.maneuverType =="esriDMTTurnRightLeft"){
-					dhtml+="<img src='../img/youzhuan.png'>"+feature.attributes.text+"<br>";
+					dhtml+="<img src='../img/youzhuan.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTTurnLeftRight"){
-					dhtml+="<img src='../img/zuozhuan.png'>"+feature.attributes.text+"<br>";
+					dhtml+="<img src='../img/zuozhuan.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTForkLeft"){
-					dhtml+="<img src='../img/left.png'>"+feature.attributes.text+"<br>";
+					dhtml+="<img src='../img/left.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTSharpLeft"){
-					dhtml+="<img src='../img/zuohouzhuan.png'>"+feature.attributes.text+"<br>";
+					dhtml+="<img src='../img/zuohouzhuan.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTSharpRight"){
-					dhtml+="<img src='../img/youhouzhuan.png'>"+feature.attributes.text+"<br>";
+					dhtml+="<img src='../img/youhouzhuan.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else if(feature.attributes.maneuverType =="esriDMTTurnLeft" || feature.attributes.maneuverType=="esriDMTBearLeft"){
-					dhtml+="<img src='../img/zuozhuan1.png'>"+feature.attributes.text+"<br>";
+					dhtml+="<img src='../img/zuozhuan1.png'>"+feature.attributes.text+"距离"+distance+"预计用时"+useTime+"<br>";
 				 }else {
 					dhtml+="<img src='../img/likai.png'>"+feature.attributes.text+"<br>";
 				 }
 				
                     //返回 feature.attributes.text; 
 					console.log(feature.attributes) ;
-             }); 
+             });
 
-			
 			 dojo.byId("direction").innerHTML=dhtml; 			
-		});   
+		}); 
+
+	 
 		
 		var msgs = ["服务器消息："];
 		for (var i = 0; i < result.messages.length; i++) {
@@ -200,6 +206,18 @@
 		if (msgs.length > 1) {
 			alert(msgs.join("\n - "));
 		}
+	}
+
+	function addSymbolclicks(){
+		require(["dojo/_base/array"],function(array){
+			var dhtml="";
+			array.map(route.attributes, function (feature) {
+                var totalmeters = feature.attributes.Total_Meters;
+				var totalminutes = feature.attributes.Total_Minutes;
+				dhtml+="总距离"+totalmeters;
+			});
+			dojo.byId("direction").innerHTML=dhtml; 	
+		});
 	}
 	
 	//路径分析异常
