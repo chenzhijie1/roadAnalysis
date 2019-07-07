@@ -31,7 +31,7 @@
 	</div>
 	
 	
-		  <div class="col-xs-9 col-xs-offset-3">
+		  <div id="info" class="col-xs-9 col-xs-offset-3">
 	
 			<div class="panel panel-primary">
 			  <div class="panel-heading">
@@ -131,6 +131,11 @@
 			for (var i = routeParams.stops.features.length - 1; i >= 0; i--) {
 				map.graphics.remove(routeParams.stops.features.splice(i, 1)[0]);
 			}
+			$("#info").load(location.href+" .panel panel-primary");
+			$("#info").load(location.href+" .panel-heading");
+			$("#info").load(location.href+" .panel-title");
+			$("#info").load(location.href+" .list-group");
+			
 		}
 
 		//增加站点
