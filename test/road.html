@@ -8,9 +8,45 @@
 	<link rel="shortcut icon" type="image/ico" href="/favicon.ico" />
 	<link rel="stylesheet" href="http://localhost/arcgis_js_api/library/3.28/esri/css/esri.css">
 	<link rel="stylesheet" href="../css/index.css">
-	<script src="http://localhost/arcgis_js_api/library/3.28/bdlib/3.18.js"></script>
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../css/demo.css">
+	<script src="http://localhost/arcgis_js_api/library/3.28/bdlib/3.18.js"></script>	
+	<script src="../js/jquery-1.11.0.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../js/paginathing.js"></script>	
+</head>
 
-	<script type="text/javascript">
+<body class="claro">
+	<div>
+	</div>
+	<button class="button-bevel orange" onclick="addStops()"> <span class="refresh"></span> 增加站点 </button>
+	<button class="button-bevel orange" onclick="clearStops()"> <span class="shuffle"></span> 清除站点 </button>
+	<button class="button-bevel orange" onclick="addBarriers()"> <span class="preview"></span> 增加路障 </button>
+	<button class="button-bevel orange" onclick="clearBarriers()"> <span class="tea"></span> 清除路障 </button>
+	<button class="button-bevel orange" onclick="solveRoute()"> <span class="wifi"></span> 路径分析 </button>
+	<button class="button-bevel orange" onclick="clearRoutes()"> <span class="locator"></span> 清除路径 </button>
+	<button class="button-bevel orange" onclick="addSymbolclicks()"> <span class="biaoji"></span> 添加标记 </button>
+	<div id="map">
+		<div id="direction" class="DH_info"></div>
+		
+	</div>
+	
+	
+		  <div class="col-xs-9 col-xs-offset-3">
+	
+			<div class="panel panel-primary">
+			  <div class="panel-heading">
+				<h3 class="panel-title">路径规划</h3>
+			  </div>
+			  <ul class="list-group">
+			  </ul>
+			</div>
+		  </div>
+	  
+	
+	
+</body>
+
+<script type="text/javascript">
 		var map, routeTask, routeParams, routes = [];
 		var stopSymbol, barrierSymbol, routeSymbol, pointStop;
 		var mapOnClick_addStops_connect = null,
@@ -49,11 +85,11 @@
 			});
 
 			var streetMap = new ArcGISDynamicMapServiceLayer(
-				"http://localhost:6080/arcgis/rest/services/RouterAnalysis/MapServer");
+				"http://localhost:6080/arcgis/rest/services/routerAnalysis/MapServer");
 			map.addLayer(streetMap);
 
 			routeTask = new RouteTask(
-				"http://localhost:6080/arcgis/rest/services/RouterAnalysis/NAServer/RouterAnalysis");
+				"http://localhost:6080/arcgis/rest/services/routerAnalysis/NAServer/Router");
 			routeParams = new RouteParameters();
 			routeParams.stops = new FeatureSet();
 			routeParams.barriers = new FeatureSet();
@@ -227,11 +263,28 @@
 						dhtml += "<img src='../img/likai.png'>" + feature.attributes.text + "<br>";
 					}
 
+					$('.list-group').append('<li class="list-group-item">  ' + dhtml + '</li>');
+					dhtml = "";
+
 					//返回 feature.attributes.text; 
 					console.log(feature.attributes);
 				});
+			
+				var feaNum = directions.features.length;
+                var totalPage = Math.ceil(feaNum / 5);
+				$('.list-group').paginathing({
+				perPage: 5,
+				limitPagination: totalPage,
+				containerClass: 'panel-footer',
+				pageNumbers: true
+            })
 
-				dojo.byId("direction").innerHTML = dhtml;
+                $('.table tbody').paginathing({
+	            perPage: 2,
+	            insertAfter: '.table',
+	            pageNumbers: true
+                });
+
 			});
 
 
@@ -254,6 +307,7 @@
 					dhtml += "总距离" + totalmeters;
 				});
 				dojo.byId("direction").innerHTML = dhtml;
+				
 			});
 		}
 
@@ -261,30 +315,7 @@
 		function errorHandler(err) {
 			alert("发生错误\n" + err.message + "\n" + err.details.join("\n"));
 		}
-	</script>
-</head>
 
-<body class="claro">
-	<div>
-
-	</div>
-	<button class="button-bevel orange" onclick="addStops()"> <span class="refresh"></span> 增加站点 </button>
-	<button class="button-bevel orange" onclick="clearStops()"> <span class="shuffle"></span> 清除站点 </button>
-	<button class="button-bevel orange" onclick="addBarriers()"> <span class="preview"></span> 增加路障 </button>
-	<button class="button-bevel orange" onclick="clearBarriers()"> <span class="tea"></span> 清除路障 </button>
-	<button class="button-bevel orange" onclick="solveRoute()"> <span class="wifi"></span> 路径分析 </button>
-	<button class="button-bevel orange" onclick="clearRoutes()"> <span class="locator"></span> 清除路径 </button>
-	<button class="button-bevel orange" onclick="addSymbolclicks()"> <span class="biaoji"></span> 添加标记 </button>
-	<div id="map">
-		<div id="direction" class="DH_info"></div>
-
-	</div>
-	<!-- <div style="width:330px;height:500px;background-color:lightgray;position: relative;border-radius: 2px;top: -641px;
-	left: 10px;opacity:0.8;">
-	<img src="../img/location3.png"><input type="text" class="text1"><img src="../img/sousuo.png"></br>
-	<img src="../img/location3.png"><input type="text" class="text1"><img src="../img/sousuo.png"><img src="../img/jiaohuan.png">
-	</div> -->
-
-</body>
+</script>
 
 </html>
