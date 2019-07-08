@@ -201,6 +201,7 @@
 	function solveRoute() {
 		dojo.byId("direction").innerHTML = "";
 		removeEventHandlers();
+		$("#info").load(location.href + " .list-group");
 		routeTask.solve(routeParams, showRoute, errorHandler);
 	}
 
