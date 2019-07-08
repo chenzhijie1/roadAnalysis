@@ -85,11 +85,11 @@
 			});
 
 			var streetMap = new ArcGISDynamicMapServiceLayer(
-				"http://localhost:6080/arcgis/rest/services/routerAnalysis/MapServer");
+				"http://localhost:6080/arcgis/rest/services/RouterAnalysis/MapServer");
 			map.addLayer(streetMap);
 
 			routeTask = new RouteTask(
-				"http://localhost:6080/arcgis/rest/services/routerAnalysis/NAServer/Router");
+				"http://localhost:6080/arcgis/rest/services/RouterAnalysis/NAServer/RouterAnalysis");
 			routeParams = new RouteParameters();
 			routeParams.stops = new FeatureSet();
 			routeParams.barriers = new FeatureSet();
@@ -180,7 +180,7 @@
 					graphic1.setInfoTemplate(infoTemplate);
 				}
 
-
+				$("#info").load(location.href+" .list-group");
 				routeParams.barriers.features.push(
 					map.graphics.add(graphic1)
 				);

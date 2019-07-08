@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="http://localhost/arcgis_js_api/library/3.28/dijit/themes/claro/claro.css">
+    <script src='http://localhost/arcgis_js_api/library/3.28/dojo/dojo.js'></script>
+
+    <title>Document</title>
+    <style>
+        .example {
+            margin: 1em;
+            text-align: center;
+            padding: 1em;
+            border: 2px solid black;
+            color: white;
+            background-color: blue;
+            width: 200px;
+            height: 100px;
+        }
+
+        .example2 {
+            margin: 1em;
+            text-align: center;
+            padding: 1em;
+            border: 2px solid black;
+            color: white;
+            background-color: blue;
+            width: 200px;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body class="claro">
+    <script>
+        require([
+            "dojo/dom-style",
+            "dojo/dom-form",
+            "dojo/dom",
+            "dojo/on",
+            "dojo/domReady!"
+        ], function (
+            style,
+            domForm,
+            dom,
+            on) {
+            on(dom.byId("convertForm"), "click", function () {
+                var formJson = domForm.toJson("myform");
+
+                // 将它作为漂亮的打印文本附加到DOM中。
+                dom.byId("output").innerHTML = formJson;
+            });
+
+            on(dom.byId("command1"), "click", function () {
+                var node = dom.byId("example");
+                var computedStyle = style.getComputedStyle(node);
+                var output = "computedStyle.width: " + computedStyle.width + "<br/>";
+                output += "computedStyle.height: " + computedStyle.height + "<br/>";
+                output += "computedStyle.backgroundColor: " + computedStyle.backgroundColor + "<br/>";
+                dom.byId("output1").innerHTML = output;
+            });
+
+            on(dom.byId("command2"), "click", function () {
+                var backgroundColor = style.set("example2", "backgroundColor", "green");
+                dom.byId("output2").innerHTML = "example2.backgroundColor: " + backgroundColor;
+            });
+
+
+        });
+    </script>
+
+    <button id="convertForm">单击此处可将表单转换为JSON</button><br><br>
+    <b>表单</b><br><br>
+    <form id="myform">
+        <input type="text" name="field1" value="value1">
+        <input type="text" name="field2" value="value2">
+        <input type="button" name="someButton" value="someValue">
+    </form>
+    <br><br>
+    <b>The form as JSON:</b>
+    <pre id="output"></pre>
+
+
+    <button id="command1" type="button">getComputedStyle()</button>
+    <div class="example" id="example">Some example node</div>
+    <p><strong>Output:</strong></p>
+    <div id="output1"></div>
+
+
+    <button id="command2" type="button">Green Please!</button>
+    <div class="example2" id="example2">Some example node</div>
+    <p><strong>Output:</strong></p>
+    <div id="output2"></div>
+
+</body>
+
+</html>
