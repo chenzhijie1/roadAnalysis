@@ -10,9 +10,9 @@
 	<link rel="stylesheet" href="../css/index.css">
 	<link href="../css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../css/demo.css">
-	<script src="http://localhost/arcgis_js_api/library/3.28/bdlib/3.18.js"></script>	
+	<script src="http://localhost/arcgis_js_api/library/3.28/bdlib/3.18.js"></script>
 	<script src="../js/jquery-1.11.0.min.js" type="text/javascript"></script>
-	<script type="text/javascript" src="../js/paginathing.js"></script>	
+	<script type="text/javascript" src="../js/paginathing.js"></script>
 </head>
 
 <body class="claro">
@@ -27,300 +27,299 @@
 	<button class="button-bevel orange" onclick="addSymbolclicks()"> <span class="biaoji"></span> 添加标记 </button>
 	<div id="map">
 		<div id="direction" class="DH_info"></div>
-		
+
 	</div>
-	
-	
-		  <div id="info" class="col-xs-9 col-xs-offset-3">
-	
-			<div class="panel panel-primary">
-			  <div class="panel-heading">
+
+
+	<div id="info" class="col-xs-9 col-xs-offset-3">
+
+		<div class="panel panel-primary">
+			<div class="panel-heading">
 				<h3 class="panel-title">路径规划</h3>
-			  </div>
-			  <ul class="list-group">
-			  </ul>
 			</div>
-		  </div>
-	  
-	
-	
+			<ul class="list-group">
+			</ul>
+		</div>
+	</div>
+
+
+
 </body>
 
 <script type="text/javascript">
-		var map, routeTask, routeParams, routes = [];
-		var stopSymbol, barrierSymbol, routeSymbol, pointStop;
-		var mapOnClick_addStops_connect = null,
-			mapOnClick_addBarriers_connect = null;
-		require([
-			"esri/map",
-			"esri/geometry/Extent",
-			"esri/SpatialReference",
-			"esri/layers/ArcGISDynamicMapServiceLayer",
-			"esri/symbols/PictureMarkerSymbol",
-			"esri/symbols/SimpleMarkerSymbol",
-			"esri/symbols/SimpleLineSymbol",
-			"esri/Color",
-			"esri/tasks/RouteTask",
-			"esri/tasks/RouteParameters",
-			"esri/tasks/FeatureSet",
-			"dojo/domReady!"
-		], function (
-			Map, Extent,
-			SpatialReference,
-			ArcGISDynamicMapServiceLayer,
-			PictureMarkerSymbol,
-			SimpleMarkerSymbol,
-			SimpleLineSymbol,
-			Color,
-			RouteTask,
-			RouteParameters,
-			FeatureSet
-		) {
-			var extent = new Extent(-122.68843648274995, 37.74065995740004, -122.12085938474996, 37.97199062310004,
-				new SpatialReference({
-					wkid: 4326
-				}))
-			map = new esri.Map("map", {
-				extent: extent
-			});
-
-			var streetMap = new ArcGISDynamicMapServiceLayer(
-				"http://localhost:6080/arcgis/rest/services/RouterAnalysis/MapServer");
-			map.addLayer(streetMap);
-
-			routeTask = new RouteTask(
-				"http://localhost:6080/arcgis/rest/services/RouterAnalysis/NAServer/RouterAnalysis");
-			routeParams = new RouteParameters();
-			routeParams.stops = new FeatureSet();
-			routeParams.barriers = new FeatureSet();
-			routeParams.returnStops = true; //返回站点  
-			routeParams.returnRoutes = true; //返回路障
-			routeParams.returnDirections = true; //返回路径导航
-			routeParams.startTimeIsUTC = true; //开始时间设置UTC格式
-			routeParams.findBestSequence = true; //返回最佳路径
-			routeParams.useTimeWindows = true; //启用时间窗口
-			routeParams.directionsLanguage = "zh-CN"; //设置返回结果为中文
-
-
-			//定义停靠点的符号
-			stopSymbol = new PictureMarkerSymbol("../img/location.png", 30, 30);
-
-			//定义障碍点的符号
-			barrierSymbol = new PictureMarkerSymbol("../img/luzhang_2.png", 30, 30);
-			//定义路径符号
-			routeSymbol = new SimpleLineSymbol().setColor(new Color([0, 0, 255, 0.5])).setWidth(5);
+	var map, routeTask, routeParams, routes = [];
+	var stopSymbol, barrierSymbol, routeSymbol, pointStop;
+	var mapOnClick_addStops_connect = null,
+		mapOnClick_addBarriers_connect = null;
+	require([
+		"esri/map",
+		"esri/geometry/Extent",
+		"esri/SpatialReference",
+		"esri/layers/ArcGISDynamicMapServiceLayer",
+		"esri/symbols/PictureMarkerSymbol",
+		"esri/symbols/SimpleMarkerSymbol",
+		"esri/symbols/SimpleLineSymbol",
+		"esri/Color",
+		"esri/tasks/RouteTask",
+		"esri/tasks/RouteParameters",
+		"esri/tasks/FeatureSet",
+		"dojo/domReady!"
+	], function (
+		Map, Extent,
+		SpatialReference,
+		ArcGISDynamicMapServiceLayer,
+		PictureMarkerSymbol,
+		SimpleMarkerSymbol,
+		SimpleLineSymbol,
+		Color,
+		RouteTask,
+		RouteParameters,
+		FeatureSet
+	) {
+		var extent = new Extent(-122.68843648274995, 37.74065995740004, -122.12085938474996, 37.97199062310004,
+			new SpatialReference({
+				wkid: 4326
+			}))
+		map = new esri.Map("map", {
+			extent: extent
 		});
 
+		var streetMap = new ArcGISDynamicMapServiceLayer(
+			"http://localhost:6080/arcgis/rest/services/RouterAnalysis/MapServer");
+		map.addLayer(streetMap);
+
+		routeTask = new RouteTask(
+			"http://localhost:6080/arcgis/rest/services/RouterAnalysis/NAServer/RouterAnalysis");
+		routeParams = new RouteParameters();
+		routeParams.stops = new FeatureSet();
+		routeParams.barriers = new FeatureSet();
+		routeParams.returnStops = true; //返回站点  
+		routeParams.returnRoutes = true; //返回路障
+		routeParams.returnDirections = true; //返回路径导航
+		routeParams.startTimeIsUTC = true; //开始时间设置UTC格式
+		routeParams.findBestSequence = true; //返回最佳路径
+		routeParams.useTimeWindows = true; //启用时间窗口
+		routeParams.directionsLanguage = "zh-CN"; //设置返回结果为中文
+
+
+		//定义停靠点的符号
+		stopSymbol = new PictureMarkerSymbol("../img/location.png", 30, 30);
+
+		//定义障碍点的符号
+		barrierSymbol = new PictureMarkerSymbol("../img/luzhang_2.png", 30, 30);
+		//定义路径符号
+		routeSymbol = new SimpleLineSymbol().setColor(new Color([0, 0, 255, 0.5])).setWidth(5);
+	});
 
 
 
-		//开始站点事件
-		function addStops() {
-			removeEventHandlers();
-			mapOnClick_addStops_connect = map.on("click", addStop);
+
+	//开始站点事件
+	function addStops() {
+		removeEventHandlers();
+		mapOnClick_addStops_connect = map.on("click", addStop);
+	}
+
+	//添加标记点击事件
+	function addSymbolclicks() {
+		console.log(1);
+	}
+
+	//清空站点
+	function clearStops() {
+		removeEventHandlers();
+		for (var i = routeParams.stops.features.length - 1; i >= 0; i--) {
+			map.graphics.remove(routeParams.stops.features.splice(i, 1)[0]);
 		}
+		$("#info").load(location.href + " .panel panel-primary");
+		$("#info").load(location.href + " .panel-heading");
+		$("#info").load(location.href + " .panel-title");
+		$("#info").load(location.href + " .list-group");
 
-		//添加标记点击事件
-		function addSymbolclicks() {
-			console.log(1);
-		}
+	}
 
-		//清空站点
-		function clearStops() {
-			removeEventHandlers();
-			for (var i = routeParams.stops.features.length - 1; i >= 0; i--) {
-				map.graphics.remove(routeParams.stops.features.splice(i, 1)[0]);
+	//增加站点
+	function addStop(evt) {
+		require(["esri/graphic", "esri/InfoTemplate", "esri/symbols/TextSymbol", "esri/Color"], function (Graphic,
+			InfoTemplate, TextSymbol, Color) {
+			var graphic = new Graphic(evt.mapPoint, stopSymbol);
+			for (var i = 0; i <= routeParams.stops.features.length; i++) {
+				var infoTemplate = new InfoTemplate();
+				infoTemplate.setTitle("站点" + (i + 1));
+				infoTemplate.setContent('<div><img src="../img/location.png">第' + (i + 1) + "个标记" + '</div>');
+				graphic.setInfoTemplate(infoTemplate);
 			}
-			$("#info").load(location.href+" .panel panel-primary");
-			$("#info").load(location.href+" .panel-heading");
-			$("#info").load(location.href+" .panel-title");
-			$("#info").load(location.href+" .list-group");
-			
-		}
-
-		//增加站点
-		function addStop(evt) {
-			require(["esri/graphic", "esri/InfoTemplate", "esri/symbols/TextSymbol", "esri/Color"], function (Graphic,
-				InfoTemplate, TextSymbol, Color) {
-				var graphic = new Graphic(evt.mapPoint, stopSymbol);
-				for (var i = 0; i <= routeParams.stops.features.length; i++) {
-					var infoTemplate = new InfoTemplate();
-					infoTemplate.setTitle("站点" + (i + 1));
-					infoTemplate.setContent('<div><img src="../img/location.png">第' + (i + 1) + "个标记" + '</div>');
-					graphic.setInfoTemplate(infoTemplate);
-				}
-				routeParams.stops.features.push(
-					map.graphics.add(graphic)
-				);
-			});
-		}
-
-		//开始增加路障事件
-		function addBarriers() {
-			removeEventHandlers();
-			mapOnClick_addBarriers_connect = map.on("click", addBarrier);
-		}
-
-		//清空路障
-		function clearBarriers() {
-			removeEventHandlers();
-			for (var i = routeParams.barriers.features.length - 1; i >= 0; i--) {
-				map.graphics.remove(routeParams.barriers.features.splice(i, 1)[0]);
-			}
-		}
-
-		//增加路障
-		function addBarrier(evt) {
-			require(["esri/graphic", "esri/InfoTemplate"], function (Graphic, InfoTemplate) {
-				var graphic1 = new Graphic(evt.mapPoint, barrierSymbol);
-				for (var i = 0; i <= routeParams.barriers.features.length; i++) {
-					var infoTemplate = new InfoTemplate();
-					infoTemplate.setTitle("路障" + (i + 1));
-					infoTemplate.setContent('<div><img src="../img/luzhang.png">第' + (i + 1) + "个路障" + '</div>');
-					graphic1.setInfoTemplate(infoTemplate);
-				}
-
-				$("#info").load(location.href+" .list-group");
-				routeParams.barriers.features.push(
-					map.graphics.add(graphic1)
-				);
-			});
-		}
-
-		//清除事件
-		function removeEventHandlers() {
-			if (mapOnClick_addStops_connect != null) {
-				mapOnClick_addStops_connect.remove();
-			}
-			if (mapOnClick_addBarriers_connect != null) {
-				mapOnClick_addBarriers_connect.remove();
-			}
-		}
-
-		//路径分析
-		function solveRoute() {
-			dojo.byId("direction").innerHTML = "";
-			removeEventHandlers();
-			routeTask.solve(routeParams, showRoute, errorHandler);
-		}
-
-		//清空路径
-		function clearRoutes() {
-			for (var i = routes.length - 1; i >= 0; i--) {
-				map.graphics.remove(routes.splice(i, 1)[0]);
-			}
-			routes = [];
-			dojo.byId("direction").innerHTML = "";
-		}
-
-		//绘制最优路径至地图
-		function showRoute(result) {
-			clearRoutes();
-			var routeResults = result.routeResults;
-			console.log(routeResults);
-			routes.push(
-				map.graphics.add(routeResults[0].route.setSymbol(routeSymbol))
+			routeParams.stops.features.push(
+				map.graphics.add(graphic)
 			);
-			var directions = routeResults[0].directions;
-			require(["dojo/_base/array"], function (array) {
-				var dhtml = "";
-				array.map(directions.features, function (feature) {
-					var time;
-					var useTime;
-					var distance = parseInt(feature.attributes.length) + "米";
-					time = feature.attributes.time;
-					useTime = time.toFixed(2) + "分";
-					if (feature.attributes.maneuverType == "esriDMTStop") {
-						dhtml += "<img src='../img/location3.png'>" + feature.attributes.text + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTStraight") {
-						dhtml += "<img src='../img/zhixing1.png'>" + feature.attributes.text + "距离" +
-							distance + "预计用时" + useTime + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTUTurn") {
-						dhtml += "<img src='../img/diaotou.png'>" + feature.attributes.text + "距离" +
-							distance + "预计用时" + useTime + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTRampRight") {
-						dhtml += "<img src='../img/zhixing.png'>" + feature.attributes.text + "距离" +
-							distance + "预计用时" + useTime + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTTurnRight" || feature.attributes
-						.maneuverType == "esriDMTTurnRightLeft") {
-						dhtml += "<img src='../img/youzhuan.png'>" + feature.attributes.text + "距离" +
-							distance + "预计用时" + useTime + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTTurnLeftRight") {
-						dhtml += "<img src='../img/zuozhuan.png'>" + feature.attributes.text + "距离" +
-							distance + "预计用时" + useTime + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTForkLeft") {
-						dhtml += "<img src='../img/left.png'>" + feature.attributes.text + "距离" + distance +
-							"预计用时" + useTime + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTSharpLeft") {
-						dhtml += "<img src='../img/zuohouzhuan.png'>" + feature.attributes.text + "距离" +
-							distance + "预计用时" + useTime + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTSharpRight") {
-						dhtml += "<img src='../img/youhouzhuan.png'>" + feature.attributes.text + "距离" +
-							distance + "预计用时" + useTime + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTTurnLeft" || feature.attributes
-						.maneuverType == "esriDMTBearLeft") {
-						dhtml += "<img src='../img/zuozhuan1.png'>" + feature.attributes.text + "距离" +
-							distance + "预计用时" + useTime + "<br>";
-					} else if (feature.attributes.maneuverType == "esriDMTBearRight") {
-						dhtml += "<img src='../img/xiangyouzhix.png'>" + feature.attributes.text + "距离" +
-							distance + "预计用时" + useTime + "<br>";
-					} else {
-						dhtml += "<img src='../img/likai.png'>" + feature.attributes.text + "<br>";
-					}
+		});
+	}
 
-					$('.list-group').append('<li class="list-group-item">  ' + dhtml + '</li>');
-					dhtml = "";
+	//开始增加路障事件
+	function addBarriers() {
+		removeEventHandlers();
+		mapOnClick_addBarriers_connect = map.on("click", addBarrier);
+	}
 
-					//返回 feature.attributes.text; 
-					console.log(feature.attributes);
-				});
-			
-				var feaNum = directions.features.length;
-                var totalPage = Math.ceil(feaNum / 5);
-				$('.list-group').paginathing({
+	//清空路障
+	function clearBarriers() {
+		removeEventHandlers();
+		for (var i = routeParams.barriers.features.length - 1; i >= 0; i--) {
+			map.graphics.remove(routeParams.barriers.features.splice(i, 1)[0]);
+		}
+	}
+
+	//增加路障
+	function addBarrier(evt) {
+		require(["esri/graphic", "esri/InfoTemplate"], function (Graphic, InfoTemplate) {
+			var graphic1 = new Graphic(evt.mapPoint, barrierSymbol);
+			for (var i = 0; i <= routeParams.barriers.features.length; i++) {
+				var infoTemplate = new InfoTemplate();
+				infoTemplate.setTitle("路障" + (i + 1));
+				infoTemplate.setContent('<div><img src="../img/luzhang.png">第' + (i + 1) + "个路障" + '</div>');
+				graphic1.setInfoTemplate(infoTemplate);
+			}
+
+			$("#info").load(location.href + " .list-group");
+			routeParams.barriers.features.push(
+				map.graphics.add(graphic1)
+			);
+		});
+	}
+
+	//清除事件
+	function removeEventHandlers() {
+		if (mapOnClick_addStops_connect != null) {
+			mapOnClick_addStops_connect.remove();
+		}
+		if (mapOnClick_addBarriers_connect != null) {
+			mapOnClick_addBarriers_connect.remove();
+		}
+	}
+
+	//路径分析
+	function solveRoute() {
+		dojo.byId("direction").innerHTML = "";
+		removeEventHandlers();
+		routeTask.solve(routeParams, showRoute, errorHandler);
+	}
+
+	//清空路径
+	function clearRoutes() {
+		for (var i = routes.length - 1; i >= 0; i--) {
+			map.graphics.remove(routes.splice(i, 1)[0]);
+		}
+		routes = [];
+		dojo.byId("direction").innerHTML = "";
+	}
+
+	//绘制最优路径至地图
+	function showRoute(result) {
+		clearRoutes();
+		var routeResults = result.routeResults;
+		console.log(routeResults);
+		routes.push(
+			map.graphics.add(routeResults[0].route.setSymbol(routeSymbol))
+		);
+		var directions = routeResults[0].directions;
+		require(["dojo/_base/array"], function (array) {
+			var dhtml = "";
+			array.map(directions.features, function (feature) {
+				var time;
+				var useTime;
+				var distance = parseInt(feature.attributes.length) + "米";
+				time = feature.attributes.time;
+				useTime = time.toFixed(2) + "分";
+				if (feature.attributes.maneuverType == "esriDMTStop") {
+					dhtml += "<img src='../img/location3.png'>" + feature.attributes.text + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTStraight") {
+					dhtml += "<img src='../img/zhixing1.png'>" + feature.attributes.text + "距离" +
+						distance + "预计用时" + useTime + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTUTurn") {
+					dhtml += "<img src='../img/diaotou.png'>" + feature.attributes.text + "距离" +
+						distance + "预计用时" + useTime + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTRampRight") {
+					dhtml += "<img src='../img/zhixing.png'>" + feature.attributes.text + "距离" +
+						distance + "预计用时" + useTime + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTTurnRight" || feature.attributes
+					.maneuverType == "esriDMTTurnRightLeft") {
+					dhtml += "<img src='../img/youzhuan.png'>" + feature.attributes.text + "距离" +
+						distance + "预计用时" + useTime + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTTurnLeftRight") {
+					dhtml += "<img src='../img/zuozhuan.png'>" + feature.attributes.text + "距离" +
+						distance + "预计用时" + useTime + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTForkLeft") {
+					dhtml += "<img src='../img/left.png'>" + feature.attributes.text + "距离" + distance +
+						"预计用时" + useTime + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTSharpLeft") {
+					dhtml += "<img src='../img/zuohouzhuan.png'>" + feature.attributes.text + "距离" +
+						distance + "预计用时" + useTime + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTSharpRight") {
+					dhtml += "<img src='../img/youhouzhuan.png'>" + feature.attributes.text + "距离" +
+						distance + "预计用时" + useTime + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTTurnLeft" || feature.attributes
+					.maneuverType == "esriDMTBearLeft") {
+					dhtml += "<img src='../img/zuozhuan1.png'>" + feature.attributes.text + "距离" +
+						distance + "预计用时" + useTime + "<br>";
+				} else if (feature.attributes.maneuverType == "esriDMTBearRight") {
+					dhtml += "<img src='../img/xiangyouzhix.png'>" + feature.attributes.text + "距离" +
+						distance + "预计用时" + useTime + "<br>";
+				} else {
+					dhtml += "<img src='../img/likai.png'>" + feature.attributes.text + "<br>";
+				}
+
+				$('.list-group').append('<li class="list-group-item">  ' + dhtml + '</li>');
+				dhtml = "";
+
+				//返回 feature.attributes.text; 
+				console.log(feature.attributes);
+			});
+
+			var feaNum = directions.features.length;
+			var totalPage = Math.ceil(feaNum / 5);
+			$('.list-group').paginathing({
 				perPage: 5,
 				limitPagination: totalPage,
 				containerClass: 'panel-footer',
 				pageNumbers: true
-            })
+			})
 
-                $('.table tbody').paginathing({
-	            perPage: 2,
-	            insertAfter: '.table',
-	            pageNumbers: true
-                });
-
+			$('.table tbody').paginathing({
+				perPage: 2,
+				insertAfter: '.table',
+				pageNumbers: true
 			});
 
+		});
 
 
-			var msgs = ["服务器消息："];
-			for (var i = 0; i < result.messages.length; i++) {
-				msgs.push(result.messages[i].type + " : " + result.messages[i].description);
-			}
-			if (msgs.length > 1) {
-				alert(msgs.join("\n - "));
-			}
+
+		var msgs = ["服务器消息："];
+		for (var i = 0; i < result.messages.length; i++) {
+			msgs.push(result.messages[i].type + " : " + result.messages[i].description);
 		}
+		if (msgs.length > 1) {
+			alert(msgs.join("\n - "));
+		}
+	}
 
-		function addSymbolclicks() {
-			require(["dojo/_base/array"], function (array) {
-				var dhtml = "";
-				array.map(route.attributes, function (feature) {
-					var totalmeters = feature.attributes.Total_Meters;
-					var totalminutes = feature.attributes.Total_Minutes;
-					dhtml += "总距离" + totalmeters;
-				});
-				dojo.byId("direction").innerHTML = dhtml;
-				
+	function addSymbolclicks() {
+		require(["dojo/_base/array"], function (array) {
+			var dhtml = "";
+			array.map(route.attributes, function (feature) {
+				var totalmeters = feature.attributes.Total_Meters;
+				var totalminutes = feature.attributes.Total_Minutes;
+				dhtml += "总距离" + totalmeters;
 			});
-		}
+			dojo.byId("direction").innerHTML = dhtml;
 
-		//路径分析异常
-		function errorHandler(err) {
-			alert("发生错误\n" + err.message + "\n" + err.details.join("\n"));
-		}
+		});
+	}
 
+	//路径分析异常
+	function errorHandler(err) {
+		alert("发生错误\n" + err.message + "\n" + err.details.join("\n"));
+	}
 </script>
 
 </html>
