@@ -10,6 +10,14 @@
 
     <meta charset="utf-8" />
 
+    <style>
+    .datagrid1{
+        position: absolute;
+        width: 200px;
+        height: 200px;
+    }
+    </style>
+
     <script src="../js/jquery-1.11.3.min.js"></script>
 
     <script type="text/javascript">
@@ -45,12 +53,12 @@
                 success : function(result) {
                     var data = JSON.parse(result);
                     var html=" ";
-                    $(".datagrid").empty();
+                    $(".datagrid1").empty();
                     // for (x in data) {
                     // document.getElementById("datagrid").innerHTML += data[x] + "<br>";
                     // }
                     html+="id:" + data.mapName + "name" + data.currentVersion + "layers" + data.layers[0];
-                    $(".datagrid").append(html);                  
+                    $(".datagrid1").append(html);                  
                 },
                 error: function (xhr, status, err) {
                     alert(xhr.responseText);
@@ -67,6 +75,7 @@
     <input type="button" value="请求数据" style="width: 70px" onclick="GetToken();">
     <input type="button" value="请求数据" style="width: 70px" onclick="getdata();">
     <span class="datagrid"> </span>
+    <span class="datagrid1"> </span>
 
 </body>
 
