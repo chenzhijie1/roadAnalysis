@@ -122,7 +122,7 @@
         pagination.push(_self.pagination('last', _self.totalPages));
       }
 
-      // page numbers
+      // 页码
       if (_self.options.pageNumbers) {
         pagination.push(_self.pagination('pageNumbers', _self.currentPage));
       }
@@ -135,11 +135,11 @@
       var options = _self.options;
       var pagination = _self.buildPagination();
 
-      // Remove children before re-render (prevent duplicate)
+      // 重新渲染前删除子元素(防止重复)
       _self.ul.children().remove();
       _self.ul.append(pagination);
 
-      // Manage active DOM
+      // DOM管理活动
       var startAt = page === 1 ? 0 : (page - 1) * options.perPage;
       var endAt = page * options.perPage;
 
@@ -149,7 +149,7 @@
         .slice(startAt, endAt)
         .show();
 
-      // Manage active state
+      // 管理活动状态
       _self.ul.children().each(function() {
         var _li = $(this);
         var type = _li.data('pagination-type');
@@ -179,7 +179,7 @@
         }
       });
 
-      // If insertAfter is defined
+      // 如果定义了insertAfter
       if (options.insertAfter) {
         _self.container.append(_self.ul).insertAfter($(options.insertAfter));
       } else {
