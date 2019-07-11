@@ -74,8 +74,7 @@
 		Color,
 		RouteTask,
 		RouteParameters,
-		FeatureSet,
-		roadAnalysis
+		FeatureSet
 	) {
 		var extent = new Extent(-122.68843648274995, 37.74065995740004, -122.12085938474996, 37.97199062310004,
 			new SpatialReference({
@@ -109,7 +108,7 @@
 		//定义障碍点的符号
 		barrierSymbol = new PictureMarkerSymbol("../img/luzhang_2.png", 30, 30);
 		//定义路径符号
-		routeSymbol = new SimpleLineSymbol().setColor(new Color([0, 0, 255, 0.5])).setWidth(5);
+		routeSymbol = new SimpleLineSymbol().setColor(new Color([0, 0, 255, 0.5])).setWidth(5);                
 	});
 
 
